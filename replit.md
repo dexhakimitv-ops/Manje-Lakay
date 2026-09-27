@@ -1,6 +1,6 @@
-# [Project name]
+# Manje Lakay
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Mobile-first Haitian food ordering PWA with a Haitian Creole customer homepage, sample local meals, gourde pricing, search and category browsing, and a working shopping cart.
 
 ## Run & Operate
 
@@ -22,15 +22,20 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/manje-lakay/src/App.tsx` — customer homepage, sample menu data, search/filtering, cart state, and install prompt
+- `artifacts/manje-lakay/src/index.css` — Manje Lakay visual theme and responsive styling
+- `artifacts/manje-lakay/public/manifest.json` — PWA metadata for Android installation
+- `artifacts/manje-lakay/public/sw.js` — offline shell caching for the first-load experience
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The first customer experience is frontend-only with local sample data so the core browse-to-cart flow can be validated before adding accounts, vendors, or payments.
+- PWA metadata and a service worker are included from the first build so the mobile experience is installable and has an offline-ready shell.
+- Haitian Creole is the primary interface language and prices are presented in HTG (goud).
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Customers can discover Haitian meals, search and filter by category, compare prices and ratings, add meals to a cart, adjust quantities, and see an order total before checkout.
 
 ## User preferences
 

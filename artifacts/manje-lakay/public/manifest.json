@@ -1,0 +1,13 @@
+{
+  "name": "Manje Lakay",
+  "short_name": "Manje Lakay",
+  "description": "Jwenn bon plat lokal bò kote w.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffaf3",
+  "theme_color": "#286443",
+  "lang": "ht",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

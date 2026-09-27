@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Manje Lakay"
+description = "A mobile-first Haitian food ordering app where customers can discover local meals, see prices in Haitian gourdes, add items to a cart, and install the experience on Android phones."
+version = "1.0.0"
+id = "artifacts/manje-lakay"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24556
+
+[services.development]
+run = "pnpm --filter @workspace/manje-lakay run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/manje-lakay", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/manje-lakay/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24556"
+BASE_PATH = "/"
