@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Manje Lakay food ordering API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: meals
+    description: Merchant meal catalog operations
+  - name: orders
+    description: Customer orders and merchant order management
+  - name: merchant
+    description: Merchant dashboard summaries
 paths:
   /healthz:
     get:
@@ -24,6 +30,162 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /meals:
+    get:
+      operationId: listMeals
+      tags: [meals]
+      summary: List meals
+      parameters:
+        - name: includeUnavailable
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Meal catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Meal"
+    post:
+      operationId: createMeal
+      tags: [meals]
+      summary: Create a meal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MealInput"
+      responses:
+        "201":
+          description: Created meal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Meal"
+  /meals/{id}:
+    patch:
+      operationId: updateMeal
+      tags: [meals]
+      summary: Update a meal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MealInput"
+      responses:
+        "200":
+          description: Updated meal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Meal"
+        "404":
+          description: Meal not found
+    delete:
+      operationId: deleteMeal
+      tags: [meals]
+      summary: Delete a meal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Meal deleted
+        "404":
+          description: Meal not found
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List incoming orders
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/OrderStatus"
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Submit a customer order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Submitted order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Invalid order
+  /orders/{id}/status:
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Accept or reject an order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusInput"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Order not found
+  /merchant/overview:
+    get:
+      operationId: getMerchantOverview
+      tags: [merchant]
+      summary: Get merchant dashboard counts
+      responses:
+        "200":
+          description: Merchant dashboard overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MerchantOverview"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +195,222 @@ components:
           type: string
       required:
         - status
-
+    Meal:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: integer
+          minimum: 0
+        photoUrl:
+          type: ["string", "null"]
+        available:
+          type: boolean
+        restaurantName:
+          type: string
+        phoneNumber:
+          type: string
+        deliveryArea:
+          type: string
+        rating:
+          type: string
+        eta:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - description
+        - category
+        - price
+        - photoUrl
+        - available
+        - restaurantName
+        - phoneNumber
+        - deliveryArea
+        - rating
+        - eta
+        - createdAt
+        - updatedAt
+    MealInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: integer
+          minimum: 0
+        photoUrl:
+          type: ["string", "null"]
+        available:
+          type: boolean
+        restaurantName:
+          type: string
+          minLength: 1
+        phoneNumber:
+          type: string
+          minLength: 1
+        deliveryArea:
+          type: string
+          minLength: 1
+        rating:
+          type: string
+        eta:
+          type: string
+      required:
+        - name
+        - description
+        - category
+        - price
+        - available
+        - restaurantName
+        - phoneNumber
+        - deliveryArea
+    OrderStatus:
+      type: string
+      enum: [pending, accepted, rejected]
+    PaymentMethod:
+      type: string
+      enum: [cash, moncash, natcash]
+    OrderLineInput:
+      type: object
+      properties:
+        mealId:
+          type: integer
+        quantity:
+          type: integer
+          minimum: 1
+      required:
+        - mealId
+        - quantity
+    OrderLine:
+      type: object
+      properties:
+        mealId:
+          type: integer
+        mealName:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: integer
+        lineTotal:
+          type: integer
+      required:
+        - mealId
+        - mealName
+        - quantity
+        - unitPrice
+        - lineTotal
+    OrderInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+          minLength: 1
+        customerPhone:
+          type: string
+          minLength: 1
+        deliveryAddress:
+          type: string
+          minLength: 1
+        paymentMethod:
+          $ref: "#/components/schemas/PaymentMethod"
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/OrderLineInput"
+      required:
+        - customerName
+        - customerPhone
+        - deliveryAddress
+        - paymentMethod
+        - items
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerName:
+          type: string
+        customerPhone:
+          type: string
+        deliveryAddress:
+          type: string
+        paymentMethod:
+          $ref: "#/components/schemas/PaymentMethod"
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderLine"
+        subtotal:
+          type: integer
+        serviceFee:
+          type: integer
+        total:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - customerName
+        - customerPhone
+        - deliveryAddress
+        - paymentMethod
+        - status
+        - items
+        - subtotal
+        - serviceFee
+        - total
+        - createdAt
+        - updatedAt
+    OrderStatusInput:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+      required:
+        - status
+    MerchantOverview:
+      type: object
+      properties:
+        mealCount:
+          type: integer
+        availableMealCount:
+          type: integer
+        pendingOrderCount:
+          type: integer
+        acceptedOrderCount:
+          type: integer
+        totalRevenue:
+          type: integer
+      required:
+        - mealCount
+        - availableMealCount
+        - pendingOrderCount
+        - acceptedOrderCount
+        - totalRevenue

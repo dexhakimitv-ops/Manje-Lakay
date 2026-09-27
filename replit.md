@@ -1,6 +1,6 @@
 # Manje Lakay
 
-Mobile-first Haitian food ordering PWA with a Haitian Creole customer homepage, sample local meals, gourde pricing, search and category browsing, and a working shopping cart.
+Mobile-first Haitian food ordering PWA with a Haitian Creole customer homepage, persistent meal catalog, gourde pricing, search and category browsing, checkout, a working shopping cart, and a merchant dashboard.
 
 ## Run & Operate
 
@@ -26,16 +26,22 @@ Mobile-first Haitian food ordering PWA with a Haitian Creole customer homepage, 
 - `artifacts/manje-lakay/src/index.css` — Manje Lakay visual theme and responsive styling
 - `artifacts/manje-lakay/public/manifest.json` — PWA metadata for Android installation
 - `artifacts/manje-lakay/public/sw.js` — offline shell caching for the first-load experience
+- `lib/api-spec/openapi.yaml` — typed contracts for meals, orders, and merchant overview data
+- `artifacts/api-server/src/routes/meals.ts` — meal catalog CRUD
+- `artifacts/api-server/src/routes/orders.ts` — customer order submission and merchant status actions
+- `artifacts/api-server/src/routes/merchant.ts` — merchant dashboard counts
+- `lib/db/src/schema/` — persistent meals and orders tables
 
 ## Architecture decisions
 
 - The first customer experience is frontend-only with local sample data so the core browse-to-cart flow can be validated before adding accounts, vendors, or payments.
 - PWA metadata and a service worker are included from the first build so the mobile experience is installable and has an offline-ready shell.
 - Haitian Creole is the primary interface language and prices are presented in HTG (goud).
+- Meal and order state is now persisted in PostgreSQL behind the shared API server; the homepage and merchant route consume the same records.
 
 ## Product
 
-Customers can discover Haitian meals, search and filter by category, compare prices and ratings, add meals to a cart, adjust quantities, and see an order total before checkout.
+Customers can discover Haitian meals, search and filter by category, compare prices and ratings, add meals to a cart, enter delivery and payment details, and submit orders. Merchants can manage their meal catalog, availability, restaurant details, and incoming orders from `/merchant`.
 
 ## User preferences
 
